@@ -1,5 +1,7 @@
 package edu.neu.csye6225.csye6225fall2024.dto;
 
+import edu.neu.csye6225.csye6225fall2024.controller.UserController;
+
 import java.time.LocalDateTime;
 
 public class UserGETDTO {
@@ -10,6 +12,7 @@ public class UserGETDTO {
     private LocalDateTime accountCreated;
     private LocalDateTime accountUpdated;
 
+    public UserGETDTO(){}
     // Constructor
     public UserGETDTO(Long id, String email, String firstName, String lastName, LocalDateTime accountCreated, LocalDateTime accountUpdated) {
         this.id = id;

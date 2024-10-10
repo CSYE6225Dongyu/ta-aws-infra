@@ -21,9 +21,10 @@ public class DatabaseInitializationService implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        jdbcTemplate.execute("CREATE DATABASE IF NOT EXISTS myapp");
+        //chenge for test
+//        jdbcTemplate.execute("CREATE DATABASE IF NOT EXISTS myapp");
 
-        jdbcTemplate.execute("USE myapp");
+//        jdbcTemplate.execute("USE myapp");
 
         jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS users (" +
                 "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
