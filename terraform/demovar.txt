@@ -1,0 +1,5 @@
+aws_region         = "us-east-1"
+vpc_cidr           = "x.x.x.x/16"
+public_subnets     = ["x.x.x.x/24", "x.x.x.x/24", "x.x.x.x/24"]
+private_subnets    = ["x.x.x.x/24", "x.x.x.x/24", "x.x.x.x/24"]
+availability_zones = ["us-east-1d", "us-east-1e", "us-east-1f"]
