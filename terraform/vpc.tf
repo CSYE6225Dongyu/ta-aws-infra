@@ -13,4 +13,3 @@ resource "aws_internet_gateway" "igw" {
     Name = "main_igw"
   }
 }
-

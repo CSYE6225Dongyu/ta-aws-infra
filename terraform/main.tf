@@ -12,3 +12,8 @@ output "private_subnet_ids" {
   description = "List of private subnet IDs"
   value       = aws_subnet.private[*].id
 }
+
+output "public_ip" {
+  value       = aws_instance.application.public_ip
+  description = "Public IP address of the EC2 instance"
+}
