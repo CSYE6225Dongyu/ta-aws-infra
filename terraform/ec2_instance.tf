@@ -7,6 +7,12 @@ resource "aws_instance" "application" {
 
   key_name = var.key_pair_name
 
+  root_block_device {
+    volume_size           = 25
+    volume_type           = "gp2"
+    delete_on_termination = true
+  }
+
   tags = {
     Name = "application-instance"
   }
