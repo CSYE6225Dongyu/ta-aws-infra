@@ -22,3 +22,18 @@ variable "availability_zones" {
   description = "List of availability zones"
   type        = list(string)
 }
+
+variable "instance_type" {
+  description = "ec2 instance type"
+  type        = string
+  default     = "t2.small"
+}
+
+variable "account_id" {
+  type        = string
+  description = "AWS Account ID used to fetch AMI"
+}
+
+variable "key_pair_name" {
+  type = string
+}
