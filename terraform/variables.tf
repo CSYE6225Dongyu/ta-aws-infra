@@ -37,3 +37,12 @@ variable "account_id" {
 variable "key_pair_name" {
   type = string
 }
+
+# Define rds variables
+variable "db_username" {
+  default = "csye6225"
+}
+
+variable "db_password" {
+  default = "YourStrongPassword"
+}
