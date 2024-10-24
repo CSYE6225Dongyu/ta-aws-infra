@@ -17,3 +17,8 @@ output "public_ip" {
   value       = aws_instance.application.public_ip
   description = "Public IP address of the EC2 instance"
 }
+
+output "db_port" {
+  value       = aws_db_instance.rds_instance.endpoint
+  description = "Private hosturlfor RDS"
+}
