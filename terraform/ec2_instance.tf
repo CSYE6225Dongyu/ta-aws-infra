@@ -40,7 +40,7 @@ resource "aws_db_instance" "rds_instance" {
 
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
   parameter_group_name   = aws_db_parameter_group.csye6225_mysql.name
-  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  vpc_security_group_ids = [aws_security_group.database_sg.id]
 
   publicly_accessible = false
   multi_az            = false

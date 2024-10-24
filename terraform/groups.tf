@@ -56,8 +56,8 @@ resource "aws_security_group" "application_sg" {
   }
 }
 
-resource "aws_security_group" "rds_sg" {
-  name        = "rds_sg"
+resource "aws_security_group" "database_sg" {
+  name        = "database_sg"
   description = "Security group for RDS instance"
   vpc_id      = aws_vpc.main.id
 
@@ -77,7 +77,7 @@ resource "aws_security_group" "rds_sg" {
   }
 
   tags = {
-    Name = "rds_sg"
+    Name = "database_sg"
   }
 }
 
