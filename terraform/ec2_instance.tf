@@ -1,9 +1,18 @@
+resource "aws_iam_instance_profile" "ec2_instance_profile" {
+  name = "application-instance-profile"
+  role = aws_iam_role.ec2_role.name
+}
+
+
 resource "aws_instance" "application" {
   ami                         = data.aws_ami.latest_ami.id
   instance_type               = var.instance_type
   subnet_id                   = aws_subnet.public[0].id
   vpc_security_group_ids      = [aws_security_group.application_sg.id]
   associate_public_ip_address = true
+
+  # attach IAM role to ec2
+  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
 
   key_name = var.key_pair_name
 
@@ -18,6 +27,8 @@ resource "aws_instance" "application" {
               echo "DB_URL=jdbc:mysql://${aws_db_instance.rds_instance.endpoint}/csye6225" | sudo tee -a /etc/webapp/.env
               echo "DB_USERNAME=${var.db_username}" | sudo tee -a /etc/webapp/.env
               echo "DB_PASSWORD=${var.db_password}" | sudo tee -a /etc/webapp/.env
+              echo "AWS_S3_BUCKET_NAME"=${aws_s3_bucket.my_bucket.bucket} | sudo tee -a /etc/webapp/.env
+              echo "AWS_REGION=${var.aws_region}" | sudo tee -a /etc/webapp/.env
               EOF
 
   tags = {

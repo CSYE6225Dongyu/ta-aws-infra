@@ -22,3 +22,10 @@ output "db_port" {
   value       = aws_db_instance.rds_instance.endpoint
   description = "Private hosturlfor RDS"
 }
+
+
+
+# output S3 crendential in local
+output "s3_bucket_name" {
+  value = aws_s3_bucket.my_bucket.bucket
+}
