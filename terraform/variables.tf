@@ -46,3 +46,13 @@ variable "db_username" {
 variable "db_password" {
   default = "YourStrongPassword"
 }
+
+variable "top_level_domain" {
+  type    = string
+  default = "csye6225dongyu.me"
+}
+
+variable "sub_domain" {
+  type    = string
+  default = "dev"
+}
