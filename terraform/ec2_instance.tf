@@ -28,7 +28,7 @@ resource "aws_instance" "application" {
               echo "DB_USERNAME=${var.db_username}" | sudo tee -a /etc/webapp/.env
               echo "DB_PASSWORD=${var.db_password}" | sudo tee -a /etc/webapp/.env
               echo "AWS_S3_BUCKET_NAME"=${aws_s3_bucket.my_bucket.bucket} | sudo tee -a /etc/webapp/.env
-              ehco "AWS_REGION=${var.aws_region}" | sudo tee -a /etc/webapp/.env
+              echo "AWS_REGION=${var.aws_region}" | sudo tee -a /etc/webapp/.env
               EOF
 
   tags = {
