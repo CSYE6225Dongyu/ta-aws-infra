@@ -38,25 +38,25 @@ resource "aws_iam_instance_profile" "ec2_instance_profile" {
 # }
 
 
-# # rds instance
-# resource "aws_db_instance" "rds_instance" {
-#   identifier        = "csye6225"
-#   engine            = "mysql"
-#   instance_class    = "db.t3.micro"
-#   allocated_storage = 20
+# rds instance
+resource "aws_db_instance" "rds_instance" {
+  identifier        = "csye6225"
+  engine            = "mysql"
+  instance_class    = "db.t3.micro"
+  allocated_storage = 20
 
-#   db_name  = "csye6225"
-#   username = var.db_username
-#   password = var.db_password
+  db_name  = "csye6225"
+  username = var.db_username
+  password = var.db_password
 
-#   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
-#   parameter_group_name   = aws_db_parameter_group.csye6225_mysql.name
-#   vpc_security_group_ids = [aws_security_group.database_sg.id]
+  db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+  parameter_group_name   = aws_db_parameter_group.csye6225_mysql.name
+  vpc_security_group_ids = [aws_security_group.database_sg.id]
 
-#   publicly_accessible = false
-#   multi_az            = false
-#   skip_final_snapshot = true
-# }
+  publicly_accessible = false
+  multi_az            = false
+  skip_final_snapshot = true
+}
 
 
 # UUID as S3 bucket name
@@ -73,7 +73,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "my_bucket_encrypt
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256" 
+      sse_algorithm = "AES256"
     }
   }
 }
@@ -120,7 +120,7 @@ resource "aws_launch_template" "application_launch_template" {
     }
   }
 
-  user_data = <<-EOF
+  user_data = base64encode(<<-EOF
               #!/bin/bash
               sudo mkdir -p /etc/webapp
               echo "DB_URL=jdbc:mysql://${aws_db_instance.rds_instance.endpoint}/csye6225" | sudo tee -a /etc/webapp/.env
@@ -129,6 +129,7 @@ resource "aws_launch_template" "application_launch_template" {
               echo "AWS_S3_BUCKET_NAME=${aws_s3_bucket.my_bucket.bucket}" | sudo tee -a /etc/webapp/.env
               echo "AWS_REGION=${var.aws_region}" | sudo tee -a /etc/webapp/.env
               EOF
+  )
 
   tags = {
     Name = "application-instance-template"

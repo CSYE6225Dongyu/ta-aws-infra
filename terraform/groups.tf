@@ -2,26 +2,26 @@
 resource "aws_security_group" "lb_security_group" {
   name        = "load_balancer_sg"
   description = "Security group for Load Balancer"
-  vpc_id      = aws_vpc.main.id  # vpc id
+  vpc_id      = aws_vpc.main.id # vpc id
 
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] 
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1" 
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
@@ -42,10 +42,10 @@ resource "aws_security_group" "application_sg" {
   }
 
   ingress {
-    description = "Application Port"
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
+    description     = "Application Port"
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
     security_groups = [aws_security_group.lb_security_group.id]
   }
 
@@ -68,22 +68,23 @@ resource "aws_security_group" "application_sg" {
     Name = "application_sg"
   }
 
-#   not used for the load balancer parts. No direct access allowed
-  # ingress {
-  #   description = "port 80"
-  #   from_port   = 80
-  #   to_port     = 80
-  #   protocol    = "tcp"
-  #   cidr_blocks = ["0.0.0.0/0"]
-  # }
+  #   not used for the load balancer parts. No direct access allowed
+  #  allow it for test only
+  ingress {
+    description = "port 80"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-  # ingress {
-  #   description = "port 443"
-  #   from_port   = 443
-  #   to_port     = 443
-  #   protocol    = "tcp"
-  #   cidr_blocks = ["0.0.0.0/0"]
-  # }
+  ingress {
+    description = "port 443"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
 }
 
@@ -137,21 +138,21 @@ resource "aws_lb" "app_load_balancer" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.lb_security_group.id]
-  subnets            = [aws_subnet.public[0].id, aws_subnet.public[1].id, aws_subnet.public[2].id]  # 使用公有子网的ID
+  subnets            = [aws_subnet.public[0].id, aws_subnet.public[1].id, aws_subnet.public[2].id] # 使用公有子网的ID
 }
 # , taget group
 resource "aws_lb_target_group" "app_target_group" {
   name     = "app-target-group"
-  port     = 8080  # app port
+  port     = 8080 # app port
   protocol = "HTTP"
   vpc_id   = aws_vpc.main.id
 
   health_check {
     healthy_threshold   = 2
     unhealthy_threshold = 2
-    timeout             = 5
-    interval            = 30
-    path                = "/"  
+    timeout             = 15
+    interval            = 60
+    path                = "/healthz"
     matcher             = "200"
   }
 }
@@ -168,13 +169,13 @@ resource "aws_lb_listener" "app_listener" {
 }
 # ag setting
 resource "aws_autoscaling_group" "application_asg" {
-  desired_capacity     = 1
-  max_size             = 3
-  min_size             = 1
-  vpc_zone_identifier  = [aws_subnet.public[0].id, aws_subnet.public[1].id, aws_subnet.public[2].id]
-  
+  desired_capacity    = 1
+  max_size            = 3
+  min_size            = 1
+  vpc_zone_identifier = [aws_subnet.public[0].id, aws_subnet.public[1].id, aws_subnet.public[2].id]
+
   launch_template {
-    id      = aws_launch_template.web_app_launch_template.id
+    id      = aws_launch_template.application_launch_template.id
     version = "$Latest"
   }
 
@@ -187,4 +188,7 @@ resource "aws_autoscaling_group" "application_asg" {
     value               = "application-instance"
     propagate_at_launch = true
   }
+
+  # dependency
+  depends_on = [aws_db_instance.rds_instance]
 }
