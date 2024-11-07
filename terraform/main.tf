@@ -13,17 +13,15 @@ output "private_subnet_ids" {
   value       = aws_subnet.private[*].id
 }
 
-output "public_ip" {
-  value       = aws_instance.application.public_ip
-  description = "Public IP address of the EC2 instance"
-}
+# output "public_ip" {
+#   value       = aws_instance.application.public_ip
+#   description = "Public IP address of the EC2 instance"
+# }
 
 output "db_port" {
   value       = aws_db_instance.rds_instance.endpoint
   description = "Private hosturlfor RDS"
 }
-
-
 
 # output S3 crendential in local
 output "s3_bucket_name" {

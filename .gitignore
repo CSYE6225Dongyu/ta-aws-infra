@@ -66,6 +66,7 @@ Thumbs.db
 # .tfstate files
 *.tfstate
 *.tfstate.*
+results.csv
 
 # Crash log files
 crash.log

@@ -9,3 +9,7 @@ data "aws_ami" "latest_ami" {
     values = ["csye6225-webapp-image-*"]
   }
 }
+
+data "aws_route53_zone" "selected_zone" {
+  name = "${var.sub_domain}.${var.top_level_domain}"
+}

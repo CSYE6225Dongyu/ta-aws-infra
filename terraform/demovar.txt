@@ -3,5 +3,5 @@ vpc_cidr           = "x.x.x.x/16"
 public_subnets     = ["x.x.x.x/24", "x.x.x.x/24", "x.x.x.x/24"]
 private_subnets    = ["x.x.x.x/24", "x.x.x.x/24", "x.x.x.x/24"]
 availability_zones = ["us-east-1d", "us-east-1e", "us-east-1f"]
-instance_type      = "t2.samll"
+instance_type      = "t2.micro"
 account_id    = "971422683736"
