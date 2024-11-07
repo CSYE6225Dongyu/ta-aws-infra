@@ -111,6 +111,10 @@ resource "aws_launch_template" "application_launch_template" {
     name = aws_iam_instance_profile.ec2_instance_profile.name
   }
 
+  monitoring {
+    enabled = true
+  }
+
   block_device_mappings {
     device_name = "/dev/xvda"
     ebs {

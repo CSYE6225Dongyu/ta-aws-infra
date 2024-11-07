@@ -70,21 +70,21 @@ resource "aws_security_group" "application_sg" {
 
   #   not used for the load balancer parts. No direct access allowed
   #  allow it for test only
-  ingress {
-    description = "port 80"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  # ingress {
+  #   description = "port 80"
+  #   from_port   = 80
+  #   to_port     = 80
+  #   protocol    = "tcp"
+  #   cidr_blocks = ["0.0.0.0/0"]
+  # }
 
-  ingress {
-    description = "port 443"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  # ingress {
+  #   description = "port 443"
+  #   from_port   = 443
+  #   to_port     = 443
+  #   protocol    = "tcp"
+  #   cidr_blocks = ["0.0.0.0/0"]
+  # }
 
 }
 
@@ -169,8 +169,8 @@ resource "aws_lb_listener" "app_listener" {
 }
 # ag setting
 resource "aws_autoscaling_group" "application_asg" {
-  desired_capacity    = 1
-  max_size            = 3
+  desired_capacity    = 2
+  max_size            = 5
   min_size            = 1
   vpc_zone_identifier = [aws_subnet.public[0].id, aws_subnet.public[1].id, aws_subnet.public[2].id]
 
@@ -182,6 +182,7 @@ resource "aws_autoscaling_group" "application_asg" {
   target_group_arns         = [aws_lb_target_group.app_target_group.arn]
   health_check_type         = "EC2"
   health_check_grace_period = 300
+  default_cooldown          = 60
 
   tag {
     key                 = "Name"
