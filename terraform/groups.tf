@@ -5,24 +5,27 @@ resource "aws_security_group" "lb_security_group" {
   vpc_id      = aws_vpc.main.id # vpc id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 }
 
@@ -34,11 +37,12 @@ resource "aws_security_group" "application_sg" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description = "port 20, ssh access/allow for test"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    description      = "port 20, ssh access/allow for test"
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   ingress {
@@ -49,19 +53,21 @@ resource "aws_security_group" "application_sg" {
     security_groups = [aws_security_group.lb_security_group.id]
   }
 
-  ingress {
-    description = "Allow RDS MySQL traffic"
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    cidr_blocks = [aws_subnet.private[0].cidr_block]
-  }
+  # not needed
+  # ingress {
+  #   description = "Allow RDS MySQL traffic"
+  #   from_port   = 3306
+  #   to_port     = 3306
+  #   protocol    = "tcp"
+  #   cidr_blocks = [aws_subnet.private[0].cidr_block]
+  # }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   tags = {
@@ -128,7 +134,7 @@ resource "aws_db_parameter_group" "csye6225_mysql" {
 
   parameter {
     name  = "max_connections"
-    value = "30"
+    value = "100"
   }
 }
 
@@ -137,6 +143,7 @@ resource "aws_lb" "app_load_balancer" {
   name               = "app-load-balancer"
   internal           = false
   load_balancer_type = "application"
+  ip_address_type    = "dualstack" # dealstack for both IPv4 and IPv6
   security_groups    = [aws_security_group.lb_security_group.id]
   subnets            = [aws_subnet.public[0].id, aws_subnet.public[1].id, aws_subnet.public[2].id] # 使用公有子网的ID
 }
