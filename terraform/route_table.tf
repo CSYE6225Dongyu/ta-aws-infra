@@ -10,7 +10,7 @@ resource "aws_route_table" "public" {
     ipv6_cidr_block = "::/0"
     gateway_id      = aws_internet_gateway.igw.id
   }
-  
+
   tags = {
     Name = "public_route_table"
   }
