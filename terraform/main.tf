@@ -1,3 +1,17 @@
+provider "aws" {
+  region = "us-east-1"
+}
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+  }
+  required_version = ">= 1.0.0"
+}
+
 output "vpc_id" {
   description = "The ID of the VPC"
   value       = aws_vpc.main.id
@@ -26,4 +40,8 @@ output "db_port" {
 # output S3 crendential in local
 output "s3_bucket_name" {
   value = aws_s3_bucket.my_bucket.bucket
+}
+
+output "topic_arn" {
+  value = aws_sns_topic.verification_topic.arn
 }
