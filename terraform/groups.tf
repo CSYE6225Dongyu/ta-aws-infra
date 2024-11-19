@@ -107,14 +107,6 @@ resource "aws_security_group" "database_sg" {
     security_groups = [aws_security_group.application_sg.id]
   }
 
-  ingress {
-    description     = "Allow MySQL traffic from Lambda"
-    from_port       = 3306
-    to_port         = 3306
-    protocol        = "tcp"
-    security_groups = [aws_security_group.lambda_sg.id] # Allow Lambda traffic
-  }
-
   egress {
     from_port   = 0
     to_port     = 0

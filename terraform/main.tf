@@ -17,15 +17,15 @@ output "vpc_id" {
   value       = aws_vpc.main.id
 }
 
-output "public_subnet_ids" {
-  description = "List of public subnet IDs"
-  value       = aws_subnet.public[*].id
-}
+# output "public_subnet_ids" {
+#   description = "List of public subnet IDs"
+#   value       = aws_subnet.public[*].id
+# }
 
-output "private_subnet_ids" {
-  description = "List of private subnet IDs"
-  value       = aws_subnet.private[*].id
-}
+# output "private_subnet_ids" {
+#   description = "List of private subnet IDs"
+#   value       = aws_subnet.private[*].id
+# }
 
 # output "public_ip" {
 #   value       = aws_instance.application.public_ip
@@ -37,11 +37,27 @@ output "db_port" {
   description = "Private hosturlfor RDS"
 }
 
-# output S3 crendential in local
-output "s3_bucket_name" {
-  value = aws_s3_bucket.my_bucket.bucket
-}
+# # output S3 crendential in local
+# output "s3_bucket_name" {
+#   value = aws_s3_bucket.my_bucket.bucket
+# }
 
 output "topic_arn" {
-  value = aws_sns_topic.verification_topic.arn
+  value       = aws_sns_topic.verification_topic.arn
+  description = "SNS topic arn, used for Lambda"
+}
+
+output "launch_template_id" {
+  value       = aws_launch_template.application_launch_template.id
+  description = "The ID of the Launch Template, used for CI/CD"
+}
+
+output "launch_template_latest_version" {
+  value       = aws_launch_template.application_launch_template.latest_version
+  description = "The latest version of the Launch Template, used for CI/CD"
+}
+
+output "auto_scaling_group_name" {
+  value       = aws_autoscaling_group.application_asg.name
+  description = "Name of ASG, used for CI/CD"
 }

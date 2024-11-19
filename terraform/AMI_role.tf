@@ -47,11 +47,11 @@ resource "aws_iam_policy" "s3_cloudwatch_policy" {
         Resource = "*"
       },
       {
-          "Effect": "Allow",
-          "Action": [
-              "sns:Publish"
-          ],
-          "Resource": "arn:aws:sns:region:account-id:topic-name"
+        "Effect" : "Allow",
+        "Action" : [
+          "sns:Publish"
+        ],
+        "Resource" : "arn:aws:sns:*:*:*"
       }
     ]
   })
