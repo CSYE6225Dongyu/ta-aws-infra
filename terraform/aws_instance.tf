@@ -103,6 +103,7 @@ resource "aws_launch_template" "application_launch_template" {
   network_interfaces {
     associate_public_ip_address = true
     security_groups             = [aws_security_group.application_sg.id]
+    ipv6_address_count          = 1 # set a IPv6 address
     # automatically set by ASG
     # subnet_id                   = aws_subnet.public[0].id 
   }
@@ -132,6 +133,7 @@ resource "aws_launch_template" "application_launch_template" {
               echo "DB_PASSWORD=${var.db_password}" | sudo tee -a /etc/webapp/.env
               echo "AWS_S3_BUCKET_NAME=${aws_s3_bucket.my_bucket.bucket}" | sudo tee -a /etc/webapp/.env
               echo "AWS_REGION=${var.aws_region}" | sudo tee -a /etc/webapp/.env
+              echo "AWS_SNS_TOPIC_ARN=${aws_sns_topic.verification_topic.arn}" | sudo tee -a /etc/webapp/.env
               EOF
   )
 

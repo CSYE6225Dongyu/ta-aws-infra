@@ -1,6 +1,6 @@
 # load balancer security group
 resource "aws_security_group" "lb_security_group" {
-  name        = "load_balancer_sg"
+  name        = "load-balancer-sg"
   description = "Security group for Load Balancer"
   vpc_id      = aws_vpc.main.id # vpc id
 
@@ -32,7 +32,7 @@ resource "aws_security_group" "lb_security_group" {
 
 # Define the Application Security Group
 resource "aws_security_group" "application_sg" {
-  name        = "application_sg"
+  name        = "application-sg"
   description = "Security group for application servers"
   vpc_id      = aws_vpc.main.id
 
@@ -95,7 +95,7 @@ resource "aws_security_group" "application_sg" {
 }
 
 resource "aws_security_group" "database_sg" {
-  name        = "database_sg"
+  name        = "database-sg"
   description = "Security group for RDS instance"
   vpc_id      = aws_vpc.main.id
 
@@ -119,10 +119,38 @@ resource "aws_security_group" "database_sg" {
   }
 }
 
+# aws_security_group.lambda_sg
+resource "aws_security_group" "lambda_sg" {
+  name        = "lambda-sg"
+  description = "Security group for Lambda function"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [] # No inbound traffic
+  }
+
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 # subnet group
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name       = "rds-subnet-group"
-  subnet_ids = [aws_subnet.private[0].id, aws_subnet.private[1].id]
+  subnet_ids = [aws_subnet.private[0].id, aws_subnet.private[1].id] # must apply on two zones
 }
 
 
@@ -145,7 +173,7 @@ resource "aws_lb" "app_load_balancer" {
   load_balancer_type = "application"
   ip_address_type    = "dualstack" # dealstack for both IPv4 and IPv6
   security_groups    = [aws_security_group.lb_security_group.id]
-  subnets            = [aws_subnet.public[0].id, aws_subnet.public[1].id, aws_subnet.public[2].id] # 使用公有子网的ID
+  subnets            = [aws_subnet.public[0].id, aws_subnet.public[1].id, aws_subnet.public[2].id]
 }
 # , taget group
 resource "aws_lb_target_group" "app_target_group" {
@@ -176,7 +204,7 @@ resource "aws_lb_listener" "app_listener" {
 }
 # ag setting
 resource "aws_autoscaling_group" "application_asg" {
-  desired_capacity    = 2
+  desired_capacity    = 1
   max_size            = 5
   min_size            = 1
   vpc_zone_identifier = [aws_subnet.public[0].id, aws_subnet.public[1].id, aws_subnet.public[2].id]

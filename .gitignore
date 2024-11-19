@@ -1,6 +1,6 @@
 # Help files
 HELP.md
-
+lambda_function.zip
 # Maven target directory
 /target/
 !**/src/main/**/target/

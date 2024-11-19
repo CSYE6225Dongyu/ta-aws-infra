@@ -47,6 +47,11 @@ variable "db_password" {
   default = "YourStrongPassword"
 }
 
+variable "db_name" {
+  type    = string
+  default = "csye6225"
+}
+
 variable "top_level_domain" {
   type    = string
   default = "csye6225dongyu.me"
@@ -55,4 +60,25 @@ variable "top_level_domain" {
 variable "sub_domain" {
   type    = string
   default = "dev"
+}
+
+variable "SENDGRID_API_KEY" {
+  type = string
+}
+
+
+
+# data: latest AMI id
+data "aws_ami" "latest_ami" {
+  most_recent = true
+  owners      = [var.account_id]
+
+  filter {
+    name   = "name"
+    values = ["csye6225-webapp-image-*"]
+  }
+}
+
+data "aws_route53_zone" "selected_zone" {
+  name = "${var.sub_domain}.${var.top_level_domain}"
 }
