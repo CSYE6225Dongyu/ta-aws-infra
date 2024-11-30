@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-east-1"
+  region = var.aws_region
 }
 
 terraform {
@@ -60,4 +60,14 @@ output "launch_template_latest_version" {
 output "auto_scaling_group_name" {
   value       = aws_autoscaling_group.application_asg.name
   description = "Name of ASG, used for CI/CD"
+}
+
+# output the Key arns
+output "kms_key_arns" {
+  value = {
+    ec2             = aws_kms_key.kms_ec2.arn
+    rds             = aws_kms_key.kms_rds.arn
+    s3              = aws_kms_key.kms_s3.arn
+    secrets_manager = aws_kms_key.kms_secrets_manager.arn
+  }
 }

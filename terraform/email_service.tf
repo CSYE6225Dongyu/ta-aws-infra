@@ -26,12 +26,11 @@ resource "aws_lambda_function" "email_verification" {
 
   # removed VPC deploy
 
-  # Add environment variables for RDS connectivity
+  # # Add environment variables for RDS connectivity, not needed
   environment {
     variables = {
-      SENDGRID_API_KEY = var.SENDGRID_API_KEY
-      Domain_Name      = "${var.sub_domain}.${var.top_level_domain}"
-      FROM_EMAIL       = "no-reply@${var.sub_domain}.${var.top_level_domain}"
+      SECRET_NAME = aws_secretsmanager_secret.webapp_secret.name
+      AWS_REGION = var.aws_region
     }
   }
 }
