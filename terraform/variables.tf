@@ -66,7 +66,9 @@ variable "SENDGRID_API_KEY" {
   type = string
 }
 
-
+variable "certificate_arn" {
+  default = "used for demo arn"
+}
 
 # data: latest AMI id
 data "aws_ami" "latest_ami" {
@@ -81,4 +83,11 @@ data "aws_ami" "latest_ami" {
 
 data "aws_route53_zone" "selected_zone" {
   name = "${var.sub_domain}.${var.top_level_domain}"
+}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_secretsmanager_secret_version" "webapp_secret_version" {
+  secret_id  = aws_secretsmanager_secret.webapp_secret.id
+  depends_on = [aws_secretsmanager_secret_version.webapp_secret_version]
 }

@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-east-1"
+  region = var.aws_region
 }
 
 terraform {
@@ -11,6 +11,16 @@ terraform {
   }
   required_version = ">= 1.0.0"
 }
+
+# terraform {
+#   required_providers {
+#     aws = {
+#       source  = "hashicorp/aws"
+#       version = ">5.0.0, <6.0.0"
+#     }
+#   }
+#   required_version = ">=1.9.0"
+# }
 
 output "vpc_id" {
   description = "The ID of the VPC"
@@ -60,4 +70,19 @@ output "launch_template_latest_version" {
 output "auto_scaling_group_name" {
   value       = aws_autoscaling_group.application_asg.name
   description = "Name of ASG, used for CI/CD"
+}
+
+# output the Key arns
+output "kms_key_arns" {
+  value = {
+    ec2             = aws_kms_key.kms_ec2.arn
+    rds             = aws_kms_key.kms_rds.arn
+    s3              = aws_kms_key.kms_s3.arn
+    secrets_manager = aws_kms_key.kms_secrets_manager.arn
+  }
+}
+
+output "certificate_arn" {
+  value       = var.certificate_arn
+  description = "aws certificate arn"
 }

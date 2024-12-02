@@ -1,4 +1,4 @@
-# create role
+# create ec2 role
 resource "aws_iam_role" "ec2_role" {
   name = "application-ec2-role"
 
@@ -57,13 +57,48 @@ resource "aws_iam_policy" "s3_cloudwatch_policy" {
   })
 }
 
-# Attach policy to role
-resource "aws_iam_role_policy_attachment" "ec2_role_policy_attachment" {
+# kms policy
+resource "aws_iam_policy" "ec2_kms_policy" {
+  name = "ec2-kms-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowKMSEncryptionDecryption",
+        Effect = "Allow",
+        Action = [
+          "kms:Decrypt",
+          "kms:Encrypt",
+          "kms:GenerateDataKey",
+          "kms:DescribeKey"
+        ],
+        Resource = aws_kms_key.kms_ec2.arn
+      }
+    ]
+  })
+}
+
+
+# Attach policies to ec2 role
+resource "aws_iam_role_policy_attachment" "ec2_role_S3_cloudwatch_policy_attachment" {
   role       = aws_iam_role.ec2_role.name
   policy_arn = aws_iam_policy.s3_cloudwatch_policy.arn
 }
 
-# lambda function role
+resource "aws_iam_role_policy_attachment" "ec2_role_secrets_manager_policy_attachment" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = aws_iam_policy.lambda_ec2_kms_secrets_policy.arn
+}
+
+
+resource "aws_iam_role_policy_attachment" "ec2_role_kms_policy_attachment" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = aws_iam_policy.ec2_kms_policy.arn
+}
+
+
+# create lambda function role
 resource "aws_iam_role" "lambda_exec_role" {
   name = "lambda_exec_role"
 
@@ -80,6 +115,7 @@ resource "aws_iam_role" "lambda_exec_role" {
     ]
   })
 }
+
 resource "aws_iam_policy" "lambda_policy" {
   name = "lambda_policy"
 
@@ -117,6 +153,40 @@ resource "aws_iam_policy" "lambda_policy" {
     ]
   })
 }
+
+
+resource "aws_iam_policy" "lambda_ec2_kms_secrets_policy" {
+  name = "lambda_ec2_kms_secretmanager_policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      # Secrets Manager permissions
+      {
+        Effect = "Allow",
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ],
+        Resource = "*"
+      },
+      # KMS permissions for decryption
+      {
+        Effect = "Allow",
+        Action = [
+          "kms:Decrypt"
+        ],
+        Resource = aws_kms_key.kms_secrets_manager.arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_kms_policy_attachment" {
+  role       = aws_iam_role.lambda_exec_role.name
+  policy_arn = aws_iam_policy.lambda_ec2_kms_secrets_policy.arn
+}
+
+
 
 
 resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {

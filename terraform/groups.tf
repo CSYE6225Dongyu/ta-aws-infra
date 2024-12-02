@@ -178,8 +178,8 @@ resource "aws_lb" "app_load_balancer" {
 # , taget group
 resource "aws_lb_target_group" "app_target_group" {
   name     = "app-target-group"
-  port     = 8080 # app port
-  protocol = "HTTP"
+  port     = 8080   # app port
+  protocol = "HTTP" # inside the system
   vpc_id   = aws_vpc.main.id
 
   health_check {
@@ -194,8 +194,16 @@ resource "aws_lb_target_group" "app_target_group" {
 # and listener
 resource "aws_lb_listener" "app_listener" {
   load_balancer_arn = aws_lb.app_load_balancer.arn
-  port              = 80
-  protocol          = "HTTP"
+  # For HTTP
+  # port              = 80
+  # protocol          = "HTTP"
+
+  # For HTTPS
+  port     = 443
+  protocol = "HTTPS"
+
+  ssl_policy      = "ELBSecurityPolicy-2016-08"
+  certificate_arn = var.certificate_arn
 
   default_action {
     type             = "forward"
