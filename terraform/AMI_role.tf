@@ -86,6 +86,12 @@ resource "aws_iam_role_policy_attachment" "ec2_role_S3_cloudwatch_policy_attachm
   policy_arn = aws_iam_policy.s3_cloudwatch_policy.arn
 }
 
+resource "aws_iam_role_policy_attachment" "ec2_role_secrets_manager_policy_attachment" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = aws_iam_policy.lambda_ec2_kms_secrets_policy.arn
+}
+
+
 resource "aws_iam_role_policy_attachment" "ec2_role_kms_policy_attachment" {
   role       = aws_iam_role.ec2_role.name
   policy_arn = aws_iam_policy.ec2_kms_policy.arn
@@ -149,8 +155,8 @@ resource "aws_iam_policy" "lambda_policy" {
 }
 
 
-resource "aws_iam_policy" "lambda_kms_secrets_policy" {
-  name = "lambda_kms_policy"
+resource "aws_iam_policy" "lambda_ec2_kms_secrets_policy" {
+  name = "lambda_ec2_kms_secretmanager_policy"
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -177,7 +183,7 @@ resource "aws_iam_policy" "lambda_kms_secrets_policy" {
 
 resource "aws_iam_role_policy_attachment" "lambda_kms_policy_attachment" {
   role       = aws_iam_role.lambda_exec_role.name
-  policy_arn = aws_iam_policy.lambda_kms_secrets_policy.arn
+  policy_arn = aws_iam_policy.lambda_ec2_kms_secrets_policy.arn
 }
 
 

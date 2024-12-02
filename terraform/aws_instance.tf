@@ -97,12 +97,38 @@ resource "aws_launch_template" "application_launch_template" {
     }
   }
 
+  # user_data = base64encode(<<-EOF
+  #             #!/bin/bash
+  #             sudo mkdir -p /etc/webapp
+
+  #             # Fetch secrets from Secrets Manager
+  #             DB_PASSWORD=$(aws secretsmanager get-secret-value --secret-id ${aws_secretsmanager_secret.webapp_secret.id} --query 'SecretString' --output text | jq -r '.database_password')
+
+  #             # Write environment variables to .env
+  #             echo "DB_URL=jdbc:mysql://${aws_db_instance.rds_instance.endpoint}/csye6225" | sudo tee -a /etc/webapp/.env
+  #             echo "DB_USERNAME=${var.db_username}" | sudo tee -a /etc/webapp/.env
+  #             echo "DB_PASSWORD=${DB_PASSWORD}" | sudo tee -a /etc/webapp/.env
+  #             echo "AWS_S3_BUCKET_NAME=${aws_s3_bucket.my_bucket.bucket}" | sudo tee -a /etc/webapp/.env
+  #             echo "AWS_REGION=${var.aws_region}" | sudo tee -a /etc/webapp/.env
+  #             echo "AWS_SNS_TOPIC_ARN=${aws_sns_topic.verification_topic.arn}" | sudo tee -a /etc/webapp/.env
+  #             EOF
+  # )
+
+
   user_data = base64encode(<<-EOF
               #!/bin/bash
+
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip
+              sudo ./aws/install
+
+              DB_PASSWORD=$(aws secretsmanager get-secret-value --secret-id ${aws_secretsmanager_secret.webapp_secret.id} --query 'SecretString' --output text | jq -r '.database_password')
+
               sudo mkdir -p /etc/webapp
               echo "DB_URL=jdbc:mysql://${aws_db_instance.rds_instance.endpoint}/csye6225" | sudo tee -a /etc/webapp/.env
               echo "DB_USERNAME=${var.db_username}" | sudo tee -a /etc/webapp/.env
-              echo "DB_PASSWORD=${jsondecode(data.aws_secretsmanager_secret_version.webapp_secret_version.secret_string)["database_password"]}" | sudo tee -a /etc/webapp/.env
+              echo "DB_PASSWORD=$DB_PASSWORD" | sudo tee -a /etc/webapp/.env
+              echo "$DB_PASSWORD"
               echo "AWS_S3_BUCKET_NAME=${aws_s3_bucket.my_bucket.bucket}" | sudo tee -a /etc/webapp/.env
               echo "AWS_REGION=${var.aws_region}" | sudo tee -a /etc/webapp/.env
               echo "AWS_SNS_TOPIC_ARN=${aws_sns_topic.verification_topic.arn}" | sudo tee -a /etc/webapp/.env
@@ -116,7 +142,8 @@ resource "aws_launch_template" "application_launch_template" {
   depends_on = [
     aws_db_instance.rds_instance,
     aws_s3_bucket.my_bucket,
-    aws_kms_key.kms_ec2
+    aws_kms_key.kms_ec2,
+    aws_secretsmanager_secret_version.webapp_secret_version
   ]
 
 }

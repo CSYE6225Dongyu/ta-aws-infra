@@ -12,6 +12,16 @@ terraform {
   required_version = ">= 1.0.0"
 }
 
+# terraform {
+#   required_providers {
+#     aws = {
+#       source  = "hashicorp/aws"
+#       version = ">5.0.0, <6.0.0"
+#     }
+#   }
+#   required_version = ">=1.9.0"
+# }
+
 output "vpc_id" {
   description = "The ID of the VPC"
   value       = aws_vpc.main.id
@@ -70,4 +80,9 @@ output "kms_key_arns" {
     s3              = aws_kms_key.kms_s3.arn
     secrets_manager = aws_kms_key.kms_secrets_manager.arn
   }
+}
+
+output "certificate_arn" {
+  value       = var.certificate_arn
+  description = "aws certificate arn"
 }

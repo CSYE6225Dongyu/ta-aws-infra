@@ -30,7 +30,8 @@ resource "aws_lambda_function" "email_verification" {
   environment {
     variables = {
       SECRET_NAME = aws_secretsmanager_secret.webapp_secret.name
-      AWS_REGION = var.aws_region
+      # AWS_REGION is reserved keyword by AWS
+      AWS_WEBAPP_REGION = var.aws_region
     }
   }
 }

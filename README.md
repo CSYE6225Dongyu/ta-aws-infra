@@ -63,7 +63,24 @@ If you need to clean up and destroy all the resources created by Terraform, you 
 terraform destroy
 ```
 
+### 7. Import SSL Certificate for ACM
+
+1. Navigate to **AWS Certificate Manager (ACM)** in the console.
+2. Import your SSL certificate with the following AWS CLI command:
+
+```bash
+aws acm import-certificate \
+    --certificate fileb://certificate.pem \
+    --private-key fileb://private-key.pem \
+    --certificate-chain fileb://certificate-chain.pem \
+    --region <region>
+```
+
+3. Put the reteurn value of `CertificateArn` into the varable file.
+
+
 ## Notes
 
 - Make sure your cloud provider credentials are properly configured before running Terraform commands. For AWS, you can configure credentials using the `aws configure` command or by setting environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`).
 - Before making changes, always run `terraform plan` to see what Terraform will do without applying any changes.
+

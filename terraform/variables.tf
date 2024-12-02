@@ -66,7 +66,9 @@ variable "SENDGRID_API_KEY" {
   type = string
 }
 
-
+variable "certificate_arn" {
+  default = "used for demo arn"
+}
 
 # data: latest AMI id
 data "aws_ami" "latest_ami" {

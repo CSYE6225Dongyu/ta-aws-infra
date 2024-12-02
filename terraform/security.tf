@@ -1,7 +1,7 @@
 resource "random_password" "db_password" {
   length           = 16
   special          = true
-  override_special = "!#$%&()*+-.:;<=>?[]^_{|}~"
+  override_special = "+-.:;<=>" # only support sepical character that not special in linux
 }
 
 resource "aws_kms_key" "kms_secrets_manager" {
@@ -10,7 +10,7 @@ resource "aws_kms_key" "kms_secrets_manager" {
   customer_master_key_spec = "SYMMETRIC_DEFAULT"
   deletion_window_in_days  = 30
   enable_key_rotation      = true
-  # rotation_period_in_days  = 90
+  # rotation_period_in_days = 90
 }
 
 resource "aws_kms_key_policy" "kms_secrets_manager_policy" {
@@ -54,6 +54,7 @@ resource "aws_kms_key" "kms_ec2" {
   customer_master_key_spec = "SYMMETRIC_DEFAULT"
   deletion_window_in_days  = 30
   enable_key_rotation      = true
+  # rotation_period_in_days = 90
 }
 
 resource "aws_kms_key_policy" "kms_ec2_policy" {
@@ -90,22 +91,22 @@ resource "aws_kms_key_policy" "kms_ec2_policy" {
         "Resource" : aws_kms_key.kms_ec2.arn
       },
       {
-        "Sid": "Allow attachment of persistent resources",
-        "Effect": "Allow",
-        "Principal": {
-            "AWS": [
-                "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
-            ]
+        "Sid" : "Allow attachment of persistent resources",
+        "Effect" : "Allow",
+        "Principal" : {
+          "AWS" : [
+            "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
+          ]
         },
-        "Action": [
-            "kms:CreateGrant"
+        "Action" : [
+          "kms:CreateGrant"
         ],
-        "Resource": "*",
-        "Condition": {
-            "Bool": {
-                "kms:GrantIsForAWSResource": true
-            }
+        "Resource" : "*",
+        "Condition" : {
+          "Bool" : {
+            "kms:GrantIsForAWSResource" : true
           }
+        }
       }
     ]
   })
@@ -117,6 +118,7 @@ resource "aws_kms_key" "kms_rds" {
   customer_master_key_spec = "SYMMETRIC_DEFAULT"
   deletion_window_in_days  = 30
   enable_key_rotation      = true
+  # rotation_period_in_days = 90
 }
 
 resource "aws_kms_key_policy" "kms_rds_policy" {
@@ -150,22 +152,22 @@ resource "aws_kms_key_policy" "kms_rds_policy" {
         "Resource" : aws_kms_key.kms_rds.arn
       },
       {
-        "Sid": "Allow attachment of persistent resources",
-        "Effect": "Allow",
-        "Principal": {
-            "AWS": [
-                "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS"
-            ]
+        "Sid" : "Allow attachment of persistent resources",
+        "Effect" : "Allow",
+        "Principal" : {
+          "AWS" : [
+            "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS"
+          ]
         },
-        "Action": [
-            "kms:CreateGrant"
+        "Action" : [
+          "kms:CreateGrant"
         ],
-        "Resource": "*",
-        "Condition": {
-            "Bool": {
-                "kms:GrantIsForAWSResource": true
-            }
+        "Resource" : "*",
+        "Condition" : {
+          "Bool" : {
+            "kms:GrantIsForAWSResource" : true
           }
+        }
       }
     ]
   })
@@ -213,9 +215,9 @@ resource "aws_kms_key_policy" "kms_s3_policy" {
     ]
   })
 }
-
+# if name conflit happend, change the name below to a new one(maybe add a version number)
 resource "aws_secretsmanager_secret" "webapp_secret" {
-  name        = "webapp-secret-v6" # name conflit
+  name        = "webapp-secret-v12" # name conflit
   description = "An example secret for storing sensitive data"
   kms_key_id  = aws_kms_key.kms_secrets_manager.id
 
@@ -224,9 +226,6 @@ resource "aws_secretsmanager_secret" "webapp_secret" {
     Application = "my-web-app"
   }
 }
-
-
-
 
 # store the secrets into Secrets Manager
 resource "aws_secretsmanager_secret_version" "webapp_secret_version" {
@@ -240,21 +239,21 @@ resource "aws_secretsmanager_secret_version" "webapp_secret_version" {
 }
 
 resource "aws_kms_alias" "alias_kms_secrets_manager" {
-  name          = "alias/secrets-manager-key-v1"
+  name          = "alias/secrets-manager-key-v12"
   target_key_id = aws_kms_key.kms_secrets_manager.id
 }
 
 resource "aws_kms_alias" "alias_kms_ec2" {
-  name          = "alias/ec2-ebs-key-v1"
+  name          = "alias/ec2-ebs-key-v12"
   target_key_id = aws_kms_key.kms_ec2.id
 }
 
 resource "aws_kms_alias" "alias_kms_s3" {
-  name          = "alias/s3-key-v1"
+  name          = "alias/s3-key-v12"
   target_key_id = aws_kms_key.kms_s3.id
 }
 
 resource "aws_kms_alias" "alias_kms_rds" {
-  name          = "alias/rds-key-v1"
+  name          = "alias/rds-key-v12"
   target_key_id = aws_kms_key.kms_rds.id
 }
